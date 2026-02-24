@@ -1,0 +1,110 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% if item %}Edit{% else %}New{% endif %} Session</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#070b16;--bg-soft:#0f1630;--card:#111729;--accent:#f5c842;--accent-2:#62d9ff;--text:#edf2ff;--muted:#9ca6c9;--border:rgba(255,255,255,.12)}
+[data-theme="light"]{--bg:#eff3ff;--bg-soft:#f7f9ff;--card:#ffffff;--accent:#cb8a00;--accent-2:#1266d4;--text:#12182d;--muted:#556082;--border:rgba(10,30,80,.14)}
+body{min-height:100vh;color:var(--text);font-family:system-ui,sans-serif;background:radial-gradient(1200px 600px at 10% -20%,rgba(98,217,255,.18),transparent 60%),radial-gradient(900px 520px at 100% 120%,rgba(245,200,66,.2),transparent 60%),linear-gradient(130deg,var(--bg),var(--bg-soft));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-2;background:conic-gradient(from 0deg,rgba(98,217,255,.12),rgba(245,200,66,.08),rgba(255,107,107,.08),rgba(98,217,255,.12));filter:blur(60px);animation:spin 22s linear infinite}
+body::after{content:"";position:fixed;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.08) 1px,transparent 0);background-size:26px 26px;mask-image:linear-gradient(to bottom,transparent,black 15%,black 85%,transparent);animation:gridShift 18s linear infinite}
+.wrap{max-width:900px;margin:1.8rem auto;padding:1rem}
+.top{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.9rem}
+.top a{color:var(--muted);text-decoration:none}
+.theme-btn{border:1px solid var(--border);background:transparent;color:var(--text);padding:.35rem .75rem;border-radius:999px;cursor:pointer}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:18px;padding:1.3rem;box-shadow:0 20px 45px rgba(0,0,0,.28)}
+h2{font-size:1.6rem}
+.sub{color:var(--muted);margin-top:.35rem;margin-bottom:1rem}
+.step{opacity:0;transform:translateY(12px);animation:reveal .55s ease forwards;animation-delay:calc(.08s + var(--i,0)*.08s)}
+label{display:block;margin:.8rem 0 .35rem;color:var(--muted);font-size:.84rem;text-transform:uppercase;letter-spacing:.4px}
+input,textarea{width:100%;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:11px;padding:.86rem .9rem;color:var(--text);outline:none;transition:.2s}
+input:focus,textarea:focus{border-color:var(--accent-2);box-shadow:0 0 0 3px rgba(98,217,255,.14)}
+textarea{min-height:210px;resize:vertical;line-height:1.55}
+.row{display:flex;gap:.7rem;margin-top:1rem;flex-wrap:wrap}
+button,a.btn{padding:.72rem 1.05rem;border-radius:10px;border:none;cursor:pointer;text-decoration:none;font-weight:700;transition:.25s}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#ffd964);color:#151515}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(245,200,66,.28)}
+.btn-muted{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+.msg{margin-top:.8rem;font-size:.92rem;color:#ff8c8c}
+.pulse{display:inline-block;animation:pulse 1.8s ease-in-out infinite}
+@keyframes reveal{to{opacity:1;transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes gridShift{0%{background-position:0 0}100%{background-position:0 26px}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top step" style="--i:0;">
+    <a href="/dashboard">&larr; Back to Dashboard</a>
+    <button type="button" class="theme-btn" id="theme-toggle">Theme</button>
+  </div>
+  <div class="card">
+    <h2 class="step" style="--i:1;">{% if item %}Edit Session{% else %}Create Session{% endif %}</h2>
+    <p class="sub step" style="--i:2;">Describe what happened. AI will generate your 60-second recovery plan <span class="pulse">✨</span></p>
+
+    <div class="step" style="--i:3;">
+      <label>Title</label>
+      <input id="title" type="text" maxlength="100" value="{{ item.title if item else '' }}" placeholder="Example: Fix my bad day">
+    </div>
+
+    <div class="step" style="--i:4;">
+      <label>Problem Details</label>
+      <textarea id="content" placeholder="Aaj mood off hai, focus nahi ban raha, boss ne daanta...">{% if item %}{{ item.data }}{% endif %}</textarea>
+    </div>
+
+    <div class="row step" style="--i:5;">
+      <button class="btn-primary" onclick="saveItem()">Generate & Save</button>
+      <a class="btn btn-muted" href="/dashboard">Cancel</a>
+    </div>
+
+    <div id="msg" class="msg step" style="--i:6;"></div>
+  </div>
+</div>
+<script>
+const k='app-theme', r=document.documentElement, s=localStorage.getItem(k);
+if(s){r.setAttribute('data-theme',s);}else{r.setAttribute('data-theme','dark');}
+document.getElementById('theme-toggle')?.addEventListener('click',()=>{
+  const n=r.getAttribute('data-theme')==='light'?'dark':'light';
+  r.setAttribute('data-theme',n); localStorage.setItem(k,n);
+});
+
+async function saveItem() {
+  const csrfToken = "{{ csrf_token() }}";
+  const title = document.getElementById('title').value.trim();
+  const raw = document.getElementById('content').value.trim();
+  const msg = document.getElementById('msg');
+  if (!title) { msg.textContent = 'Title is required'; return; }
+  let payload = {};
+  try {
+    payload = raw ? JSON.parse(raw) : {};
+  } catch {
+    payload = { content: raw };
+  }
+  payload.title = title;
+  payload.generate_fix = true;
+  {% if item %}payload.id = {{ item.id }};{% endif %}
+
+  msg.style.color = '#9ca6c9';
+  msg.textContent = 'Generating AI fix...';
+
+  const res = await fetch('/item/save', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if (data.success && data.id) {
+    window.location.href = '/item/' + data.id;
+    return;
+  }
+  msg.style.color = '#ff8c8c';
+  msg.textContent = data.error || 'Save failed';
+}
+</script>
+<div id="fuzail-credit" style="position:fixed;right:12px;bottom:10px;z-index:9999;padding:6px 10px;border-radius:999px;font:600 12px/1.2 system-ui,sans-serif;background:rgba(0,0,0,.45);color:#f5c842;border:1px solid rgba(245,200,66,.35);backdrop-filter:blur(6px);">Built by Fuzail</div></body>
+</html>
+

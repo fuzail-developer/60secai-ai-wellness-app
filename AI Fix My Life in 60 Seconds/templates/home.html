@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>60SecAI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050816;--bg-soft:#0b1230;--panel:#101a34cc;--accent:#f5c842;--accent-2:#59d4ff;--text:#ecf2ff;--muted:#9ba8cc;--border:rgba(255,255,255,.14)}
+[data-theme="light"]{--bg:#eef2ff;--bg-soft:#f7f9ff;--panel:#ffffffd9;--accent:#cc8b00;--accent-2:#1268da;--text:#131a2e;--muted:#5a6685;--border:rgba(20,40,90,.18)}
+body{min-height:100vh;color:var(--text);font-family:"Sora","Segoe UI",system-ui,sans-serif;background:radial-gradient(1000px 500px at 0% -10%,rgba(89,212,255,.22),transparent 60%),radial-gradient(800px 550px at 100% 120%,rgba(245,200,66,.22),transparent 62%),linear-gradient(135deg,var(--bg),var(--bg-soft));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-22%;z-index:-2;background:conic-gradient(from 0deg,rgba(89,212,255,.13),rgba(245,200,66,.08),rgba(255,107,107,.08),rgba(89,212,255,.13));filter:blur(70px);animation:spin 28s linear infinite}
+body::after{content:"";position:fixed;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.11) 1px,transparent 0);background-size:30px 30px;mask-image:linear-gradient(to bottom,transparent,black 16%,black 86%,transparent);animation:gridMove 22s linear infinite}
+.orb{position:fixed;z-index:-1;border-radius:50%;pointer-events:none;filter:blur(16px);opacity:.42}
+.orb.a{width:240px;height:240px;top:14%;left:6%;background:#55d8ff;animation:floatA 12s ease-in-out infinite}
+.orb.b{width:280px;height:280px;bottom:10%;right:9%;background:#ffd86a;animation:floatB 14s ease-in-out infinite}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;position:sticky;top:0;z-index:10;background:linear-gradient(90deg,rgba(5,8,22,.76),rgba(8,18,52,.6));backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.logo{font-size:2rem;font-weight:800;letter-spacing:.3px;color:var(--accent);text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:.9rem}
+.nav-links a{text-decoration:none;color:var(--muted);padding:.5rem 1rem;border-radius:999px;border:1px solid transparent;transition:.28s}
+.nav-links a:hover{color:var(--text);transform:translateY(-1px);border-color:var(--border);background:rgba(255,255,255,.04)}
+.btn-primary{background:linear-gradient(90deg,var(--accent),#ffe07a);color:#161616 !important;font-weight:700 !important;border:none !important}
+.theme-btn{border:1px solid var(--border);background:transparent;color:var(--text);padding:.48rem .95rem;border-radius:999px;cursor:pointer;transition:.28s}
+.theme-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.hero{min-height:calc(100vh - 78px);display:grid;place-items:center;padding:2.2rem}
+.hero-card{max-width:980px;width:100%;padding:3rem 2.4rem;text-align:center;border-radius:28px;border:1px solid var(--border);background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04));backdrop-filter:blur(10px);box-shadow:0 40px 80px rgba(0,0,0,.35);transform-style:preserve-3d;transition:transform .22s ease, box-shadow .22s ease;position:relative;overflow:hidden}
+.hero-card::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.22) 50%,transparent 70%);transform:translateX(-120%);animation:sheen 5s ease-in-out infinite;pointer-events:none}
+.hero h1{font-size:clamp(2.6rem,6.4vw,5.4rem);line-height:1.04;letter-spacing:-1.1px;transform:translateZ(55px)}
+.hero h1 span{color:var(--accent)}
+.hero p{margin:1.2rem auto 2rem;max-width:700px;color:var(--muted);font-size:1.35rem;line-height:1.72;transform:translateZ(40px)}
+.btns{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;transform:translateZ(44px)}
+.btn{padding:.95rem 2rem;border-radius:999px;text-decoration:none;font-weight:700;border:1px solid var(--border);transition:.28s}
+.btn-g{background:linear-gradient(90deg,var(--accent),#ffe07a);color:#121212;border:none}
+.btn-g:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 14px 30px rgba(245,200,66,.33)}
+.btn-o{color:var(--text);background:rgba(255,255,255,.05)}
+.btn-o:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(89,212,255,.22);border-color:var(--accent-2)}
+.btn-outline{color:var(--text);background:rgba(255,255,255,.05)}
+.btn-outline:hover{transform:translateY(-2px);box-shadow:0 12px 24px rgba(89,212,255,.22);border-color:var(--accent-2)}
+.reveal{opacity:0;transform:translateY(16px) scale(.98);animation:reveal .7s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--d,0s)}
+@keyframes reveal{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:0 30px}}
+@keyframes floatA{0%,100%{transform:translate(0,0)}50%{transform:translate(28px,-26px)}}
+@keyframes floatB{0%,100%{transform:translate(0,0)}50%{transform:translate(-26px,20px)}}
+@keyframes sheen{0%,100%{transform:translateX(-120%)}50%{transform:translateX(120%)}}
+@media (max-width:768px){.hero-card{padding:2rem 1.2rem}.hero p{font-size:1.08rem}.logo{font-size:1.65rem}}
+</style>
+</head>
+<body>
+<div class="orb a"></div>
+<div class="orb b"></div>
+<nav class="reveal" style="--d:.03s;">
+  <a href="/" class="logo">60SecAI</a>
+  <div class="nav-links">
+    <button id="theme-toggle" class="theme-btn" type="button">Theme</button>
+    <a href="/login">Login</a>
+    <a href="/signup" class="btn-primary">Get Started</a>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-card" id="hero-card">
+    <div class="reveal" style="text-align:center; padding:4rem 2rem; --d:.1s;">
+      <h1 style="font-size:3.5rem; margin-bottom:1rem; color:var(--accent);">
+        Fix Your Worst Day<br>In Just <span style="color:#ffd700;">60 Seconds</span>
+      </h1>
+      <p style="font-size:1.3rem; color:#aaa; margin:1rem 0 2rem;">
+        Thousands of people use it daily to turn bad days into better ones 💪
+      </p>
+      <p style="font-size:1.4rem; color:var(--muted); max-width:600px; margin:0 auto 2rem;">
+        Stress, bad mood, overthinking, boss ne daanta? Drop your problem - get instant practical recovery plan.
+      </p>
+      <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap;">
+        <a href="/signup" class="btn btn-primary" style="padding:1rem 2.5rem; font-size:1.2rem;">
+          Start Fixing Now -&gt;
+        </a>
+        <a href="/login" class="btn btn-outline" style="padding:1rem 2.5rem; font-size:1.2rem;">
+          I Already Have Account
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+<div id="fuzail-credit" style="position:fixed;right:12px;bottom:10px;z-index:9999;padding:6px 10px;border-radius:999px;font:600 12px/1.2 system-ui,sans-serif;background:rgba(0,0,0,.45);color:#f5c842;border:1px solid rgba(245,200,66,.35);backdrop-filter:blur(6px);">Built by Fuzail</div>
+<script>
+const themeKey='app-theme';
+const root=document.documentElement;
+const saved=localStorage.getItem(themeKey);
+if(saved){root.setAttribute('data-theme',saved);}else{root.setAttribute('data-theme','dark');}
+document.getElementById('theme-toggle')?.addEventListener('click',()=>{
+  const next=root.getAttribute('data-theme')==='light'?'dark':'light';
+  root.setAttribute('data-theme',next);
+  localStorage.setItem(themeKey,next);
+});
+const heroCard=document.getElementById('hero-card');
+heroCard?.addEventListener('mousemove',(e)=>{
+  const r=heroCard.getBoundingClientRect();
+  const x=(e.clientX-r.left)/r.width-.5;
+  const y=(e.clientY-r.top)/r.height-.5;
+  heroCard.style.transform=`perspective(1200px) rotateX(${(-y*7).toFixed(2)}deg) rotateY(${(x*9).toFixed(2)}deg) translateZ(0)`;
+  heroCard.style.boxShadow='0 48px 90px rgba(0,0,0,.4)';
+});
+heroCard?.addEventListener('mouseleave',()=>{
+  heroCard.style.transform='perspective(1200px) rotateX(0deg) rotateY(0deg)';
+  heroCard.style.boxShadow='0 40px 80px rgba(0,0,0,.35)';
+});
+</script>
+</body>
+</html>

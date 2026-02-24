@@ -1,0 +1,61 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sign Up</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg1:#0a0a0f;--bg2:#12101a;--card:#13131a;--border:#222230;--text:#f0f0f0;--muted:#888;--accent:#f5c842}
+[data-theme="light"]{--bg1:#eef2ff;--bg2:#f8fafc;--card:#ffffff;--border:#d7d9e3;--text:#171717;--muted:#555;--accent:#c58000}
+body{background:linear-gradient(135deg,var(--bg1),var(--bg2));min-height:100vh;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif;color:var(--text)}
+.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:2.5rem;width:100%;max-width:440px;box-shadow:0 25px 60px rgba(0,0,0,.25)}
+h2{font-size:1.8rem;font-weight:700;text-align:center;margin-bottom:.4rem}
+.sub{color:var(--muted);text-align:center;font-size:.9rem;margin-bottom:2rem}
+.flash-error{background:rgba(255,107,107,.1);border:1px solid rgba(255,107,107,.3);color:#ff6b6b;padding:.7rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem}
+.flash-success{background:rgba(80,220,140,.1);border:1px solid rgba(80,220,140,.3);color:#50dc8c;padding:.7rem 1rem;border-radius:8px;font-size:.85rem;margin-bottom:1rem}
+label{display:block;font-size:.78rem;font-weight:600;color:var(--muted);margin-bottom:.4rem;text-transform:uppercase;letter-spacing:.5px}
+input{width:100%;background:transparent;border:1px solid var(--border);border-radius:10px;padding:.85rem 1rem;color:var(--text);font-size:.95rem;outline:none;margin-bottom:1.2rem;transition:.3s}
+input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(245,200,66,.1)}
+.btn{width:100%;background:var(--accent);color:#000;border:none;padding:1rem;border-radius:10px;font-weight:700;font-size:1rem;cursor:pointer;transition:.3s}
+.btn:hover{filter:brightness(1.04);transform:translateY(-2px)}
+.link-row{text-align:center;margin-top:1rem;color:var(--muted);font-size:.9rem}
+.link-row a{color:var(--accent);text-decoration:none;font-weight:500}
+.theme-wrap{text-align:right;margin-bottom:.8rem}
+.theme-btn{border:1px solid var(--border);padding:.25rem .7rem;border-radius:999px;background:transparent;color:var(--text);cursor:pointer}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="theme-wrap"><button type="button" class="theme-btn" id="theme-toggle">Theme</button></div>
+  <h2>Create Account</h2>
+  <div class="sub">Join today â€” it's completely free</div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash-{{ cat }}">{{ msg }}</div>
+    {% endfor %}
+  {% endwith %}
+  <form method="POST">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Username</label>
+    <input type="text" name="username" placeholder="Choose a username" required minlength="3">
+    <label>Email Address</label>
+    <input type="email" name="email" placeholder="your@email.com" required>
+    <label>Password</label>
+    <input type="password" name="password" placeholder="Min 6 characters" required minlength="6">
+    <label>Confirm Password</label>
+    <input type="password" name="confirm_password" placeholder="Repeat password" required>
+    <button type="submit" class="btn">Create Free Account â†’</button>
+  </form>
+  <div class="link-row">Already have an account? <a href="/login">Sign in</a></div>
+</div>
+<script>
+  const k='app-theme', r=document.documentElement, s=localStorage.getItem(k);
+  if(s) r.setAttribute('data-theme', s);
+  document.getElementById('theme-toggle')?.addEventListener('click', () => {
+    const n = r.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
+    r.setAttribute('data-theme', n); localStorage.setItem(k, n);
+  });
+</script>
+<div id="fuzail-credit" style="position:fixed;right:12px;bottom:10px;z-index:9999;padding:6px 10px;border-radius:999px;font:600 12px/1.2 system-ui,sans-serif;background:rgba(0,0,0,.45);color:#f5c842;border:1px solid rgba(245,200,66,.35);backdrop-filter:blur(6px);">Built by Fuzail</div></body>
+</html>

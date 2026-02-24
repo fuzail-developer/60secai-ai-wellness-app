@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ item.title }}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#070b16;--bg-soft:#0f1630;--card:#111729;--accent:#f5c842;--accent-2:#62d9ff;--text:#edf2ff;--muted:#9ca6c9;--border:rgba(255,255,255,.12)}
+[data-theme="light"]{--bg:#eff3ff;--bg-soft:#f7f9ff;--card:#ffffff;--accent:#cb8a00;--accent-2:#1266d4;--text:#12182d;--muted:#556082;--border:rgba(10,30,80,.14)}
+body{min-height:100vh;color:var(--text);font-family:system-ui,sans-serif;background:radial-gradient(1200px 600px at 10% -20%,rgba(98,217,255,.18),transparent 60%),radial-gradient(900px 520px at 100% 120%,rgba(245,200,66,.2),transparent 60%),linear-gradient(130deg,var(--bg),var(--bg-soft));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-20%;z-index:-2;background:conic-gradient(from 0deg,rgba(98,217,255,.12),rgba(245,200,66,.08),rgba(255,107,107,.08),rgba(98,217,255,.12));filter:blur(60px);animation:spin 22s linear infinite}
+body::after{content:"";position:fixed;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.08) 1px,transparent 0);background-size:26px 26px;mask-image:linear-gradient(to bottom,transparent,black 15%,black 85%,transparent);animation:gridShift 18s linear infinite}
+.wrap{max-width:940px;margin:1.8rem auto;padding:1rem}
+.top{display:flex;justify-content:space-between;align-items:center;gap:.8rem;margin-bottom:.9rem}
+.top a{color:var(--muted);text-decoration:none}
+.theme-btn{border:1px solid var(--border);background:transparent;color:var(--text);padding:.35rem .75rem;border-radius:999px;cursor:pointer}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,.02));border:1px solid var(--border);border-radius:18px;padding:1.3rem;box-shadow:0 20px 45px rgba(0,0,0,.28)}
+h2{font-size:1.85rem}
+pre{white-space:pre-wrap;word-break:break-word;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:11px;padding:1rem;margin-top:1rem;line-height:1.6}
+.row{display:flex;gap:.7rem;margin-top:1rem;flex-wrap:wrap}
+a.btn-primary,a.btn-muted{padding:.72rem 1.05rem;border-radius:10px;text-decoration:none;font-weight:700;transition:.25s}
+a.btn-primary{background:linear-gradient(90deg,var(--accent),#ffd964);color:#141414;border:none}
+a.btn-muted{background:rgba(255,255,255,.06);color:var(--text);border:1px solid var(--border)}
+a.btn-primary:hover,a.btn-muted:hover{transform:translateY(-2px)}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes gridShift{0%{background-position:0 0}100%{background-position:0 26px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <a href="/dashboard">&larr; Back to Dashboard</a>
+    <button type="button" class="theme-btn" id="theme-toggle">Theme</button>
+  </div>
+
+  <div class="card">
+    <h2>{{ item.title }}</h2>
+    <div style="color:#888;margin-top:.3rem;">Updated {{ item.updated_at.strftime('%b %d, %Y %H:%M') }}</div>
+
+    <pre style="margin-top:1rem;">Original Problem: {{ data.content }}</pre>
+
+    {% if data.ai_fix %}
+    <div style="margin-top:2rem; padding:1.5rem; background:rgba(80,220,140,0.15); border:1px solid rgba(80,220,140,0.4); border-radius:12px;">
+      <h3 style="color:#50dc8c; margin-bottom:1rem;">Your 60-Second Fix 💪</h3>
+      <div style="white-space:pre-wrap; line-height:1.7; color:var(--text);">
+        {{ data.ai_fix | safe }}
+      </div>
+    </div>
+    {% endif %}
+
+    <div class="row" style="margin-top:2rem;">
+      <a class="btn-primary" href="/item/{{ item.id }}/edit">Edit</a>
+      <a class="btn-muted" href="/item/{{ item.id }}/pdf">Download PDF</a>
+      <a class="btn-muted" href="/dashboard">Back to Dashboard</a>
+    </div>
+  </div>
+</div>
+
+<div id="fuzail-credit" style="position:fixed;right:12px;bottom:10px;z-index:9999;padding:6px 10px;border-radius:999px;font:600 12px/1.2 system-ui,sans-serif;background:rgba(0,0,0,.45);color:#f5c842;border:1px solid rgba(245,200,66,.35);backdrop-filter:blur(6px);">Built by Fuzail</div>
+
+<script>
+const k='app-theme', r=document.documentElement, s=localStorage.getItem(k);
+if(s){r.setAttribute('data-theme',s);}else{r.setAttribute('data-theme','dark');}
+document.getElementById('theme-toggle')?.addEventListener('click',()=>{
+  const n=r.getAttribute('data-theme')==='light'?'dark':'light';
+  r.setAttribute('data-theme',n); localStorage.setItem(k,n);
+});
+</script>
+</body>
+</html>

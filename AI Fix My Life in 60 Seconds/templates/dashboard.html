@@ -1,0 +1,167 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard - 60SecAI</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#050816;--bg-soft:#0b1230;--panel:#101a34cc;--accent:#f5c842;--accent-2:#59d4ff;--text:#ecf2ff;--muted:#9ba8cc;--border:rgba(255,255,255,.14)}
+[data-theme="light"]{--bg:#eef2ff;--bg-soft:#f7f9ff;--panel:#ffffffd9;--accent:#cc8b00;--accent-2:#1268da;--text:#131a2e;--muted:#5a6685;--border:rgba(20,40,90,.18)}
+body{min-height:100vh;color:var(--text);font-family:"Sora","Segoe UI",system-ui,sans-serif;background:radial-gradient(1000px 500px at 0% -10%,rgba(89,212,255,.22),transparent 60%),radial-gradient(800px 550px at 100% 120%,rgba(245,200,66,.22),transparent 62%),linear-gradient(135deg,var(--bg),var(--bg-soft));overflow-x:hidden}
+body::before{content:"";position:fixed;inset:-22%;z-index:-2;background:conic-gradient(from 0deg,rgba(89,212,255,.13),rgba(245,200,66,.08),rgba(255,107,107,.08),rgba(89,212,255,.13));filter:blur(70px);animation:spin 28s linear infinite}
+body::after{content:"";position:fixed;inset:0;z-index:-1;background-image:radial-gradient(circle at 1px 1px,rgba(255,255,255,.11) 1px,transparent 0);background-size:30px 30px;mask-image:linear-gradient(to bottom,transparent,black 16%,black 86%,transparent);animation:gridMove 22s linear infinite}
+nav{display:flex;justify-content:space-between;align-items:center;padding:1rem 2rem;position:sticky;top:0;z-index:12;background:linear-gradient(90deg,rgba(5,8,22,.76),rgba(8,18,52,.6));backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
+.brand a{font-size:2rem;font-weight:800;letter-spacing:.3px;color:var(--accent);text-decoration:none}
+.madeby{display:block;color:var(--muted);font-size:.9rem;margin-top:.2rem}
+.nav-right{display:flex;align-items:center;gap:.85rem;flex-wrap:wrap}
+.badge{background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.3);color:var(--accent);padding:.46rem 1rem;border-radius:999px;font-size:.95rem}
+.theme-btn{border:1px solid var(--border);background:transparent;color:var(--text);padding:.48rem .95rem;border-radius:999px;cursor:pointer;transition:.28s}
+.theme-btn:hover{transform:translateY(-1px);box-shadow:0 10px 24px rgba(0,0,0,.2)}
+.logout{color:var(--muted);text-decoration:none;padding:.45rem .75rem;border-radius:999px;transition:.28s}
+.logout:hover{color:#ff8f8f;background:rgba(255,107,107,.12)}
+main{max-width:1260px;margin:0 auto;padding:2.1rem 1.2rem 3rem}
+.hero{padding:1.5rem 1.3rem;border:1px solid var(--border);border-radius:24px;background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.04));backdrop-filter:blur(10px);box-shadow:0 34px 70px rgba(0,0,0,.34);transform-style:preserve-3d;transition:transform .25s ease, box-shadow .25s ease;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:linear-gradient(120deg,transparent 30%,rgba(255,255,255,.18) 52%,transparent 72%);transform:translateX(-130%);animation:sheen 6s ease-in-out infinite;pointer-events:none}
+.hero h1{font-size:3.8rem;letter-spacing:-1px;transform:translateZ(38px)}
+.hero p{margin-top:.55rem;color:var(--muted);font-size:1.45rem;line-height:1.6;transform:translateZ(28px)}
+.hero-note{margin-top:1rem;color:var(--accent);font-size:1.45rem;font-weight:700;transform:translateZ(34px)}
+.actions{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.15rem;transform:translateZ(32px)}
+.btn-new{background:linear-gradient(90deg,var(--accent),#ffe07a);color:#141414;padding:.82rem 1.2rem;border-radius:12px;text-decoration:none;font-weight:800;font-size:1.2rem;transition:.28s}
+.btn-new:hover{transform:translateY(-2px) scale(1.02);box-shadow:0 14px 32px rgba(245,200,66,.35)}
+.flash-error{background:rgba(255,107,107,.12);border:1px solid rgba(255,107,107,.38);color:#ff8f8f;padding:.8rem 1rem;border-radius:12px;font-size:1.15rem;margin:1rem 0}
+.flash-success{background:rgba(80,220,140,.12);border:1px solid rgba(80,220,140,.35);color:#70e9aa;padding:.8rem 1rem;border-radius:12px;font-size:1.15rem;margin:1rem 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1rem;margin-top:1.3rem;perspective:1200px}
+.card{background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.03));border:1px solid var(--border);border-radius:18px;padding:1.2rem;position:relative;overflow:hidden;transform-style:preserve-3d;transition:transform .22s ease, box-shadow .22s ease;opacity:0;transform:translateY(16px) scale(.985);animation:reveal .65s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:calc(.12s + (var(--i,0) * .08s))}
+.card::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,var(--accent),var(--accent-2));transform:scaleX(0);transform-origin:left;transition:.25s}
+.card:hover::before{transform:scaleX(1)}
+.card-icon{width:56px;height:56px;border-radius:14px;background:rgba(245,200,66,.18);display:grid;place-items:center;font-weight:800;font-size:2rem;color:var(--accent);margin-bottom:1rem;transform:translateZ(26px)}
+.card-title{font-size:2rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transform:translateZ(18px)}
+.card-date{color:var(--muted);font-size:1.35rem;margin:.5rem 0 1rem;transform:translateZ(14px)}
+.card-actions{display:flex;flex-wrap:wrap;gap:.45rem;transform:translateZ(16px)}
+.btn-sm{padding:.46rem .9rem;border-radius:10px;font-size:1.15rem;font-weight:700;text-decoration:none;transition:.2s;border:1px solid transparent;cursor:pointer}
+.btn-view{background:rgba(245,200,66,.13);color:var(--accent);border-color:rgba(245,200,66,.3)}
+.btn-edit{background:rgba(89,212,255,.12);color:var(--accent-2);border-color:rgba(89,212,255,.3)}
+.btn-pdf{background:rgba(80,220,140,.11);color:#70e9aa;border-color:rgba(80,220,140,.32)}
+.btn-del{background:rgba(255,107,107,.12);color:#ff8f8f;border-color:rgba(255,107,107,.34)}
+.btn-sm:hover{transform:translateY(-1px)}
+.empty{text-align:center;padding:3.4rem 1.3rem;color:var(--muted);border:1px dashed var(--border);border-radius:16px;margin-top:1rem}
+.reveal{opacity:0;transform:translateY(16px) scale(.98);animation:reveal .7s cubic-bezier(.2,.8,.2,1) forwards;animation-delay:var(--d,0s)}
+@keyframes reveal{to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes gridMove{0%{background-position:0 0}100%{background-position:0 30px}}
+@keyframes sheen{0%,100%{transform:translateX(-130%)}50%{transform:translateX(120%)}}
+@media (max-width:1000px){.hero h1{font-size:2.6rem}.hero p,.hero-note,.btn-new,.card-title,.card-date,.btn-sm,.flash-error,.flash-success{font-size:1rem}.brand a{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<nav class="reveal" style="--d:.03s;">
+  <div class="brand">
+    <a href="/">60SecAI</a>
+    <span class="madeby">Built by Fuzail</span>
+  </div>
+  <div class="nav-right">
+    <button id="theme-toggle" class="theme-btn" type="button">Theme</button>
+    <span class="badge">User: {{ current_user.username }}</span>
+    <a href="/logout" class="logout">Logout</a>
+  </div>
+</nav>
+<main>
+  <section class="hero reveal" id="hero-panel" style="--d:.09s;">
+    <h1>Dashboard</h1>
+    <p>Tell me what is wrong today and I will give you a practical recovery plan in 60 seconds.</p>
+    <div class="hero-note">60SecAI - Your Instant Life Fix Coach 💪</div>
+    <div class="actions">
+      <a href="/project/export.zip" class="btn-new">Download ZIP</a>
+      <a href="/item/new" class="btn-new">+ New Session</a>
+    </div>
+  </section>
+
+  {% if not current_user.is_verified %}
+    <div class="flash-error reveal" style="--d:.14s;">
+      Email not verified.
+      <form method="POST" action="/resend-verification" style="display:inline;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="email" value="{{ current_user.email }}">
+        <button type="submit" class="btn-sm btn-view">Resend verification</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if fallback_msg %}
+    <div id="fallback-alert" class="flash-error reveal" style="--d:.16s;position:relative;padding-right:6rem;">
+      AI generation failed: {{ fallback_msg }} (using default scaffold)
+      <form method="POST" action="/fallback/clear" style="display:inline;position:absolute;top:8px;right:34px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" style="background:none;border:none;color:#ff8f8f;cursor:pointer;">Clear</button>
+      </form>
+      <button onclick="this.parentElement.style.display='none'" style="position:absolute;top:8px;right:12px;background:none;border:none;color:#ff8f8f;cursor:pointer;">X</button>
+    </div>
+    <script>
+      setTimeout(() => {
+        const alert = document.getElementById('fallback-alert');
+        if (alert) alert.style.display = 'none';
+      }, 10000);
+    </script>
+  {% endif %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}
+      <div class="flash-{{cat}} reveal" style="--d:.17s;">{{msg}}</div>
+    {% endfor %}
+  {% endwith %}
+
+  {% if items %}
+    <div class="grid">
+      {% for item in items %}
+      <div class="card tilt-card" style="--i:{{ loop.index0 }};">
+        <div class="card-icon">AI</div>
+        <div class="card-title">{{ item.title | truncate(40) }} 💭</div>
+        <div class="card-date">Updated {{ item.updated_at.strftime('%b %d, %Y') }}</div>
+        <div class="card-actions">
+          <a href="/item/{{item.id}}" class="btn-sm btn-view">View</a>
+          <a href="/item/{{item.id}}/edit" class="btn-sm btn-edit">Edit</a>
+          <a href="/item/{{item.id}}/pdf" class="btn-sm btn-pdf">PDF</a>
+          <form method="POST" action="/item/{{item.id}}/delete" style="display:inline" onsubmit="return confirm('Delete this item?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit" class="btn-sm btn-del">Delete</button>
+          </form>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty reveal" style="--d:.2s;">
+      <h3>No sessions yet</h3>
+      <p>Create your first life-fix session to get started.</p>
+      <br><a href="/item/new" class="btn-new">+ Create First Session</a>
+    </div>
+  {% endif %}
+</main>
+<div id="fuzail-credit" style="position:fixed;right:12px;bottom:10px;z-index:9999;padding:6px 10px;border-radius:999px;font:600 12px/1.2 system-ui,sans-serif;background:rgba(0,0,0,.45);color:#f5c842;border:1px solid rgba(245,200,66,.35);backdrop-filter:blur(6px);">Built by Fuzail</div>
+<script>
+const k='app-theme', r=document.documentElement, s=localStorage.getItem(k);
+if(s){r.setAttribute('data-theme',s);}else{r.setAttribute('data-theme','dark');}
+document.getElementById('theme-toggle')?.addEventListener('click',()=>{
+  const n=r.getAttribute('data-theme')==='light'?'dark':'light';
+  r.setAttribute('data-theme',n); localStorage.setItem(k,n);
+});
+function attachTilt(el, maxX=8, maxY=10){
+  el.addEventListener('mousemove',(e)=>{
+    const r=el.getBoundingClientRect();
+    const x=(e.clientX-r.left)/r.width-.5;
+    const y=(e.clientY-r.top)/r.height-.5;
+    el.style.transform=`perspective(1200px) rotateX(${(-y*maxX).toFixed(2)}deg) rotateY(${(x*maxY).toFixed(2)}deg) translateZ(0)`;
+    el.style.boxShadow='0 24px 48px rgba(0,0,0,.35)';
+  });
+  el.addEventListener('mouseleave',()=>{
+    el.style.transform='perspective(1200px) rotateX(0deg) rotateY(0deg)';
+    el.style.boxShadow='';
+  });
+}
+const hero=document.getElementById('hero-panel');
+if(hero) attachTilt(hero,6,8);
+document.querySelectorAll('.tilt-card').forEach((c)=>attachTilt(c,7,9));
+</script>
+</body>
+</html>
