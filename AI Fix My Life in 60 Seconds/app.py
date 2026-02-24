@@ -16,14 +16,6 @@ logger = logging.getLogger(__name__)
 PLACEHOLDER_VALUES = {"", "your-key-here", "your-email@example.com", "your-email-password"}
 
 try:
-    from weasyprint import HTML
-    PDF_ENABLED = True
-except ImportError:
-    HTML = None
-    PDF_ENABLED = False
-    logger.warning("WeasyPrint not installed - PDF generation disabled")
-
-try:
     from flask_mail import Mail, Message
     MAIL_IMPORT_OK = True
 except Exception:
@@ -459,7 +451,7 @@ def export_project_zip():
 @app.route("/item/<int:item_id>/pdf")
 @login_required
 def download_pdf(item_id):
-    flash("PDF generation is temporarily disabled on free hosting. Coming soon!", "info")
+    flash("PDF download is temporarily disabled. Use browser print instead!", "info")
     return redirect(url_for("view_item", item_id=item_id))
 
 @app.route("/ai/bullets", methods=["POST"])
