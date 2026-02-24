@@ -456,40 +456,11 @@ def export_project_zip():
         download_name=f"create-a-production-ready-flask-web-app-called-60secai-ai-fix-my.zip"
     )
 
-if not PDF_ENABLED:
-    @app.route("/item/<int:item_id>/pdf")
-    @login_required
-    def download_pdf(item_id):
-        item = Item.query.filter_by(id=item_id, user_id=current_user.id).first_or_404()
-        data = json.loads(item.data)
-        text_export = (
-            f"Title: {item.title}\n"
-            f"Updated: {item.updated_at.strftime('%b %d, %Y %H:%M')}\n\n"
-            "Original Problem:\n"
-            f"{data.get('content', '')}\n\n"
-            "60-Second Fix:\n"
-            f"{data.get('ai_fix', 'AI fix not available yet.')}\n"
-        )
-        return send_file(
-            io.BytesIO(text_export.encode("utf-8")),
-            mimetype="text/plain; charset=utf-8",
-            as_attachment=True,
-            download_name=f"{item.title.replace(' ', '_')}.txt",
-        )
-else:
-    @app.route("/item/<int:item_id>/pdf")
-    @login_required
-    def download_pdf(item_id):
-        item = Item.query.filter_by(id=item_id, user_id=current_user.id).first_or_404()
-        data = json.loads(item.data)
-        html = render_template("item_pdf.html", item=item, data=data)
-        pdf  = HTML(string=html).write_pdf()
-        return send_file(
-            io.BytesIO(pdf),
-            mimetype="application/pdf",
-            as_attachment=True,
-            download_name=f"{item.title.replace(' ', '_')}.pdf"
-        )
+@app.route("/item/<int:item_id>/pdf")
+@login_required
+def download_pdf(item_id):
+    flash("PDF generation is temporarily disabled. Coming soon!", "info")
+    return redirect(url_for("view_item", item_id=item_id))
 
 @app.route("/ai/bullets", methods=["POST"])
 @login_required
