@@ -459,7 +459,7 @@ def export_project_zip():
 @app.route("/item/<int:item_id>/pdf")
 @login_required
 def download_pdf(item_id):
-    flash("PDF generation is temporarily disabled. Coming soon!", "info")
+    flash("PDF generation is temporarily disabled on free hosting. Coming soon!", "info")
     return redirect(url_for("view_item", item_id=item_id))
 
 @app.route("/ai/bullets", methods=["POST"])
