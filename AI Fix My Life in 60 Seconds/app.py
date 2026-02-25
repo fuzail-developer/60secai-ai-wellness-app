@@ -39,10 +39,9 @@ if OPENAI_KEY:
         logger.warning("OpenAI client unavailable: %s", e)
 
 app = Flask(__name__)
-secret_key = os.getenv("SECRET_KEY")
-if not secret_key:
-    raise RuntimeError("SECRET_KEY is required. Set it in .env or environment.")
+secret_key = os.getenv("SECRET_KEY", "flask_default_secret_key_123456789abc")
 app.secret_key = secret_key
+
 app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///app.db")
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 app.config["SESSION_COOKIE_HTTPONLY"] = True
@@ -503,6 +502,7 @@ if __name__ == "__main__":
     with app.app_context():
         db.create_all()
     app.run(host="0.0.0.0", port=port, debug=False)
+
 
 
 
