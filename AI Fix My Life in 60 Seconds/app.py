@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from pathlib import Path
 import json, os, secrets, io, logging, zipfile
 from dotenv import load_dotenv
+import os
 
 load_dotenv()
 logging.basicConfig(level=logging.INFO)
@@ -497,6 +498,8 @@ def server_error(e):
     return render_template("500.html"), 500
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
     with app.app_context():
         db.create_all()
-    app.run(debug=True, use_reloader=True, reloader_type="stat", port=5000)
+    app.run(host="0.0.0.0", port=port, debug=False)5000)
+
